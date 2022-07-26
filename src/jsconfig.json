@@ -1,0 +1,6 @@
+{
+  // "compilerOptions": {
+  //   "baseUrl": "src" // 프로젝트 파일의 기본 경로 지정 (import 할때 ./ 생략가능해서 편리함)
+  // },
+  // "include": ["src"]
+}

@@ -10,7 +10,7 @@ const AppRouter = (props) => {
 
   return (
     <Router>
-      {props.isLoggedIn && <Navigation />}
+      {props.isLoggedIn && <Navigation isLoggedIn={props.isLoggedIn} userObj={props.userObj}/>}
       <Switch>
         {props.isLoggedIn ? (
           <>
@@ -18,7 +18,7 @@ const AppRouter = (props) => {
               <Home userObj={props.userObj} />
             </Route>
             <Route exact path="/profile">
-              <Profile />
+              <Profile userObj={props.userObj} refreshUser={props.refreshUser} />
             </Route>
             <Redirect from="*" to="/" />
           </>

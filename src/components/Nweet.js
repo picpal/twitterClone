@@ -13,7 +13,9 @@ const Nweet = (props) => {
     const ok = window.confirm("삭제하시겠습니까?");
     if (ok) {
       await dbService.doc(`nweets/${id}`).delete();
-      await storageService.refFromURL(attachmentURL).delete();
+      if(attachmentURL){
+        await storageService.refFromURL(attachmentURL).delete();
+      }
     }
   };
 

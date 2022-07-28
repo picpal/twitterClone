@@ -22,22 +22,32 @@ const Home = (props) => {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    // 임시파일
-    const fileRef = storageService.ref().child(`${props.userObj.uid}/${uuidv4()}`);
 
-    const response = await fileRef.putString(attachment,"data_url");
-    console.log(response);
+    let attachmentURL= "";
+    if(attachment != ""){
+      // 임시파일
+      const attachmentRef = storageService
+        .ref()
+        .child(`${props.userObj.uid}/${uuidv4()}`);
+  
+      const response = await attachmentRef.putString(attachment, "data_url");
+      console.log(response);
+  
+      // 업로드된 파일이 있다면 파일을 먼저 업로드하고
+      // 업로드된 파일의 경로를 받아서 데이터로 저장.
+      attachmentURL = await response.ref.getDownloadURL();
+    }
 
-    // 업로드된 파일이 있다면 파일을 먼저 업로드하고
-    // 업로드된 파일의 경로를 받아서 데이터로 저장.
+    const nweetObj = {
+      text: nweet,
+      createdAt: Date.now(),
+      creatorId: props.userObj.uid,
+      attachmentURL
+    };
 
-    // await dbService.collection("nweets").add({
-    //   text: nweet,
-    //   createdAt: Date.now(),
-    //   creatorId: props.userObj.uid,
-    // });
-
-    // setNweet("");
+    await dbService.collection("nweets").add(nweetObj);
+    setNweet("");
+    setAttachment("");
   };
 
   const onChange = (event) => {

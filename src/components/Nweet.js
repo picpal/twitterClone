@@ -1,10 +1,9 @@
-import { isEditable } from "@testing-library/user-event/dist/utils";
 import React, { useState } from "react";
-import { dbService } from "../fbase";
+import { dbService, storageService } from "../fbase";
 
 const Nweet = (props) => {
   const {
-    nweet: { id, text, isOwner },
+    nweet: { id, text, isOwner, attachmentURL },
   } = props;
 
   const [editing, setEditing] = useState(false);
@@ -14,6 +13,7 @@ const Nweet = (props) => {
     const ok = window.confirm("삭제하시겠습니까?");
     if (ok) {
       await dbService.doc(`nweets/${id}`).delete();
+      await storageService.refFromURL(attachmentURL).delete();
     }
   };
 
@@ -25,30 +25,32 @@ const Nweet = (props) => {
     event.preventDefault();
 
     await dbService.doc(`nweets/${id}`).update({
-      text : newNweet,
-    })
+      text: newNweet,
+    });
 
     setEditing(false); // 수정이 끝났다고 상태 변경
   };
-  
 
   const onChange = (event) => {
-    const {target:{value}} = event;
-    setNewNweet(value)
+    const {
+      target: { value },
+    } = event;
+    setNewNweet(value);
   };
-  
 
   return (
     <div>
       <h4>{text}</h4>
+      {attachmentURL && (
+        <img src={attachmentURL} width="50px" height="50px" alt="picture" />
+      )}
       {editing && (
         <>
           <form onSubmit={onSubmit}>
             <input type="text" value={newNweet} onChange={onChange} required />
-            <input type="submit" value="수정"/>
+            <input type="submit" value="수정" />
           </form>
           <button onClick={toggleEditing}>취소</button>
-          
         </>
       )}
       {!editing && isOwner && (

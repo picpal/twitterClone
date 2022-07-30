@@ -6,36 +6,26 @@ const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [newAccount, setNewAccount] = useState(true);
   const [error, setError] = useState("");
-
-  const toggleAccount = () => setNewAccount((prev) => !prev);
-
   const onChange = (event) => {
     const {
       target: { name, value },
     } = event;
-
     if (name === "email") {
       setEmail(value);
-    }
-    if (name === "password") {
+    } else if (name === "password") {
       setPassword(value);
     }
   };
-
   const onSubmit = async (event) => {
     event.preventDefault();
-
     try {
-      console.log(`email : ${email} , password : ${password}`);
       let data;
       if (newAccount) {
-        // 계정생성
         data = await authService.createUserWithEmailAndPassword(
           email,
           password
         );
       } else {
-        // 로그인
         data = await authService.signInWithEmailAndPassword(email, password);
       }
       console.log(data);
@@ -43,34 +33,39 @@ const AuthForm = () => {
       setError(error.message);
     }
   };
-
+  const toggleAccount = () => setNewAccount((prev) => !prev);
   return (
     <>
-      <form action="" onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className="container">
         <input
-          type="text"
+          name="email"
+          type="email"
           placeholder="Email"
           required
-          name="email"
           value={email}
           onChange={onChange}
+          className="authInput"
         />
         <input
+          name="password"
           type="password"
           placeholder="Password"
           required
-          name="password"
           value={password}
+          className="authInput"
           onChange={onChange}
         />
-        <input type="submit" value={newAccount ? "Create Account" : "Log in"} />
+        <input
+          type="submit"
+          className="authInput authSubmit"
+          value={newAccount ? "Create Account" : "Sign In"}
+        />
+        {error && <span className="authError">{error}</span>}
       </form>
-      <p>{error}</p>
-      <span onClick={toggleAccount}>
-        {newAccount ? "Log in" : "Create Account"}
+      <span onClick={toggleAccount} className="authSwitch">
+        {newAccount ? "Sign In" : "Create Account"}
       </span>
     </>
   );
 };
-
 export default AuthForm;

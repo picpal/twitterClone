@@ -1,47 +1,43 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppRouter from "./Router";
-import { authService } from "../fbase";
+import { authService } from '../fbase';
 
 function App() {
   const [init, setInit] = useState(false);
-  const [isLoggedIn, setisLoggedIn] = useState(false);
   const [userObj, setUserObj] = useState(null);
-
   useEffect(() => {
     authService.onAuthStateChanged((user) => {
       if (user) {
-        setisLoggedIn(true);
         setUserObj({
           displayName: user.displayName,
           uid: user.uid,
           updateProfile: (args) => user.updateProfile(args),
         });
       } else {
-        setisLoggedIn(false);
         setUserObj(null);
       }
-      setInit(true); // 초기화 여부
+      setInit(true);
     });
   }, []);
-
   const refreshUser = () => {
     const user = authService.currentUser;
-    setUserObj({displayName: user.displayName,
+    setUserObj({
+      displayName: user.displayName,
       uid: user.uid,
-      updateProfile: (args) => user.updateProfile(args),});
+      updateProfile: (args) => user.updateProfile(args),
+    });
   };
-
   return (
     <>
-      {init && (
+      {init ? (
         <AppRouter
           refreshUser={refreshUser}
-          isLoggedIn={isLoggedIn}
+          isLoggedIn={Boolean(userObj)}
           userObj={userObj}
         />
+      ) : (
+        "Initializing..."
       )}
-      {!init && "Initialzing....."}
-      <footer>&copy; picpal</footer>
     </>
   );
 }

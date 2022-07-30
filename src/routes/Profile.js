@@ -1,65 +1,52 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { authService } from "../fbase";
 import { useHistory } from "react-router-dom";
-import { authService, dbService } from "../fbase";
 
-const Profile = (props) => {
-  const [newDisplayName, setNewDisplayName] = useState(
-    props.userObj.displayName
-  );
-
+export default ({ refreshUser, userObj }) => {
   const history = useHistory();
-  const onLogoutClick = () => {
+  const [newDisplayName, setNewDisplayName] = useState(userObj.displayName);
+  const onLogOutClick = () => {
     authService.signOut();
     history.push("/");
   };
-
-  // 내가 쓴 글 가져오기 ( query 사용 )
-  const getMyNweet = async () => {
-    const nweets = await dbService
-      .collection("nweets")
-      .where("creatorId", "==", props.userObj.uid)
-      .orderBy("createdAt", "asc")
-      .get();
-    console.log(nweets.docs.map((doc) => doc.data()));
-  };
-
   const onChange = (event) => {
     const {
       target: { value },
     } = event;
     setNewDisplayName(value);
   };
-
   const onSubmit = async (event) => {
     event.preventDefault();
-
-    if (newDisplayName !== props.userObj.displayName) {
-      await props.userObj.updateProfile({
+    if (userObj.displayName !== newDisplayName) {
+      await userObj.updateProfile({
         displayName: newDisplayName,
       });
-
-      props.refreshUser();
+      refreshUser();
     }
   };
-
-  useEffect(() => {
-    getMyNweet();
-  }, [getMyNweet]);
-
   return (
-    <div>
-      <form onSubmit={onSubmit}>
+    <div className="container">
+      <form onSubmit={onSubmit} className="profileForm">
         <input
-          type="text"
-          placeholder="이름 보이기"
           onChange={onChange}
+          type="text"
+          autoFocus
+          placeholder="Display name"
           value={newDisplayName}
+          className="formInput"
         />
-        <input type="submit" value="프로필 수정" />
+        <input
+          type="submit"
+          value="Update Profile"
+          className="formBtn"
+          style={{
+            marginTop: 10,
+          }}
+        />
       </form>
-      <button onClick={onLogoutClick}>Log Out</button>
+      <span className="formBtn cancelBtn logOut" onClick={onLogOutClick}>
+        Log Out
+      </span>
     </div>
   );
 };
-
-export default Profile;

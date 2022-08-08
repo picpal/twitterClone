@@ -1,3 +1,6 @@
-# Nwitter
+# 트위터 클론코딩
 
-Twitter (mini)clone with React and Firebase
+- firebase 기능을 활용한 소셜 로그인, 이메일 로그인 구현
+- List 페이지
+- Write , modifi 페이지 ( + 사진 첨부)
+
